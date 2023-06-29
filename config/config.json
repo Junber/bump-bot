@@ -1,0 +1,16 @@
+{
+	"trigger": "bump",
+	"embed title": "bump",
+	"embed field name": "bump",
+	"channel" : "scheduling-or-some-say-bump",
+	"required votes": 5,
+	"reactions": {
+		"Ⓜ️" : "Monday",
+		"NormalTuesday" : "Tuesday",
+		"🇼" : "Wednesday",
+		"🇹" : "Thursday",
+		"🇫" : "Friday",
+		"postnutclearitbee" : "Saturday",
+		"Breen" : "Sunday"
+	}
+}
