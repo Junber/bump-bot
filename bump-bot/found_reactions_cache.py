@@ -4,7 +4,7 @@ import discord
 import config
 import discord_client
 
-FoundReactions = Dict[str, List[discord.User]]
+FoundReactions = Dict[str, List[discord.Member]]
 
 found_reactions_cache: Dict[int, FoundReactions] = {}
 
@@ -34,10 +34,10 @@ def initialize_found_reactions(message: discord.Message):
 		found_reactions[emoji_string] = []
 	found_reactions_cache[message.id] = found_reactions
 
-def add_found_reaction(message_id: int, emoji: discord.PartialEmoji, user: discord.User|discord.Member):
+def add_found_reaction(message_id: int, emoji: discord.PartialEmoji, member: discord.Member):
 	if message_id in found_reactions_cache:
-		found_reactions_cache[message_id][emoji.name].append(user)
+		found_reactions_cache[message_id][emoji.name].append(member)
 
-def remove_found_reaction(message_id: int, emoji: discord.PartialEmoji, user: discord.User|discord.Member):
+def remove_found_reaction(message_id: int, emoji: discord.PartialEmoji, member: discord.Member):
 	if message_id in found_reactions_cache:
-		found_reactions_cache[message_id][emoji.name].remove(user)
+		found_reactions_cache[message_id][emoji.name].remove(member)
