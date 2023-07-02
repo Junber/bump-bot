@@ -35,7 +35,7 @@ async def reaction_changed(payload: discord.RawReactionActionEvent, added: bool)
 	message = await message_cache.get_message(payload.message_id, channel)	
 	if message:
 
-		# There is not member field on reaction_removed events
+		# reaction_removed events have no "member", so we grab them via the user_id
 		member = discord.utils.get(client.get_all_members(), id=(payload.member.id if payload.member is not None else payload.user_id))
 		if added:
 			found_reactions_cache.add_found_reaction(payload.message_id, payload.emoji, member)
