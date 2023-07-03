@@ -34,11 +34,12 @@ async def reaction_changed(payload: discord.RawReactionActionEvent, added: bool)
 	
 	message = await message_cache.get_message(payload.message_id, channel)	
 	if message:
-		user = discord.utils.get(client.users, id=payload.user_id)
+
+		member = channel.guild.get_member(payload.user_id)
 		if added:
-			found_reactions_cache.add_found_reaction(payload.message_id, payload.emoji, user)
+			found_reactions_cache.add_found_reaction(payload.message_id, payload.emoji, member)
 		else:
-			found_reactions_cache.remove_found_reaction(payload.message_id, payload.emoji, user)
+			found_reactions_cache.remove_found_reaction(payload.message_id, payload.emoji, member)
 		await bump_message.update_bump_message(message)
 
 @client.event
