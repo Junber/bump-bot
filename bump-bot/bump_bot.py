@@ -33,6 +33,10 @@ def main():
 			elif message.content.startswith(config.get_trigger()):
 				argument = message.content[len(config.get_trigger()):].strip()
 				await replace_pins(message.channel, functools.partial(bump_time_message.send, message.channel, argument))
+		
+		if message.channel.name == config.get_admin_channel_name():
+			if message.content == config.get_shutdown_trigger():
+				await client.close()
 
 
 	async def reaction_changed(payload: discord.RawReactionActionEvent, added: bool):

@@ -34,5 +34,7 @@
 			"9️⃣" : "19:00",
 			"🔟" : "20:00"
 		}
-	}
+	},
+	"admin channel" : "bot",
+	"shutdown trigger" : "shutdown"
 }

@@ -33,6 +33,12 @@ def get_required_votes():
 def get_log_file_name():
 	return config.get("log file name", "")
 
+def get_admin_channel_name():
+	return config.get("admin channel", "")
+
+def get_shutdown_trigger():
+	return config.get("shutdown trigger", "")
+
 
 # Bump message
 def get_bump_message_config():
