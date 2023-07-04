@@ -36,3 +36,6 @@ def get_channel_name():
 
 def get_required_votes():
 	return config.get("required votes", 0)
+
+def get_log_file_name():
+	return config.get("log file name", "")

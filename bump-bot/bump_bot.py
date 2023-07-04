@@ -10,8 +10,6 @@ import bump_message
 config.load_config()
 client = discord_client.get_client()
 
-reaction_counts = {}
-
 @client.event
 async def on_message(message: discord.Message):
 	if message.author == client.user:
@@ -50,4 +48,4 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
 async def on_raw_reaction_remove(payload: discord.RawReactionActionEvent):
 	await reaction_changed(payload, False)
 
-client.run(config.get_token())
+discord_client.run_client()
