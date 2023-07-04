@@ -1,17 +1,38 @@
 {
 	"trigger": "bump",
-	"embed title": "bump",
-	"embed field name": "bump",
 	"channel" : "scheduling-or-some-say-bump",
 	"required votes": 5,
-	"reactions": {
-		"Ⓜ️" : "Monday",
-		"NormalTuesday" : "Tuesday",
-		"🇼" : "Wednesday",
-		"🇹" : "Thursday",
-		"🇫" : "Friday",
-		"postnutclearitbee" : "Saturday",
-		"Breen" : "Sunday"
+	"log file name": "",
+	"bump message" : {
+		"message content" : "bump",
+		"embed title": "bump",
+		"embed field name": "bump",
+		"reactions": {
+			"Ⓜ️" : "Monday",
+			"NormalTuesday" : "Tuesday",
+			"🇼" : "Wednesday",
+			"🇹" : "Thursday",
+			"🇫" : "Friday",
+			"postnutclearitbee" : "Saturday",
+			"Breen" : "Sunday"
+		}
 	},
-	"log file name": ""
+	"bump time message" : {
+		"message content prefix" : "",
+		"message content postfix" : " it is then. Bump!",
+		"embed title": "bump time",
+		"embed field name": "bump time",
+		"reactions": {
+			"1️⃣" : "11:00",
+			"2️⃣" : "12:00",
+			"3️⃣" : "13:00",
+			"4️⃣" : "14:00",
+			"5️⃣" : "15:00",
+			"6️⃣" : "16:00",
+			"7️⃣" : "17:00",
+			"8️⃣" : "18:00",
+			"9️⃣" : "19:00",
+			"🔟" : "20:00"
+		}
+	}
 }

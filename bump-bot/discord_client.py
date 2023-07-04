@@ -23,3 +23,8 @@ def run_client():
 		os.makedirs(os.path.dirname(log_file_name), exist_ok=True)
 		handler = logging.FileHandler(filename=log_file_name, encoding='utf-8', mode='w')
 	get_client().run(config.get_token(), log_handler=handler, log_level=logging.DEBUG)
+
+def get_emoji(emoji_string: str):
+	if emoji_string[0].isalpha():
+		return discord.utils.get(get_client().emojis, name=emoji_string)
+	return emoji_string
