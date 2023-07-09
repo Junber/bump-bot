@@ -36,7 +36,10 @@ def main():
 		
 		if message.channel.name == config.get_admin_channel_name():
 			if message.content == config.get_shutdown_trigger():
+				await message.channel.send("Urghhhhhhh!!!!!")
 				await client.close()
+			elif message.content == config.get_log_trigger():
+				await message.channel.send("I guess I did somwethinwg wwonwg~ Sowwi~ *screeches*", file=discord.File(config.get_log_file_name()))
 
 
 	async def reaction_changed(payload: discord.RawReactionActionEvent, added: bool):

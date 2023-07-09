@@ -39,6 +39,9 @@ def get_admin_channel_name():
 def get_shutdown_trigger():
 	return config.get("shutdown trigger", "")
 
+def get_log_trigger():
+	return config.get("log trigger", "")
+
 
 # Bump message
 def get_bump_message_config():
