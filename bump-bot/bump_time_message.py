@@ -16,7 +16,7 @@ def get_embed(found_reactions: found_reactions_cache.FoundReactions):
 		message_text += "No votes yet"
 	else:
 		member : discord.Member
-		for member in members_who_voted:
+		for member in sorted(members_who_voted, key=lambda x: x.display_name):
 			message_text += member.display_name
 			message_text += ", "
 		message_text = message_text.removesuffix(", ")
@@ -49,7 +49,7 @@ def get_embed(found_reactions: found_reactions_cache.FoundReactions):
 		if len(members) == 0:
 			message_text_options_chunk += "-"
 		elif len(members) < len(members_who_voted):
-			for member in sorted(members):
+			for member in sorted(members, key=lambda x: x.display_name):
 				message_text_options_chunk += member.display_name
 				message_text_options_chunk += ", "
 			message_text = message_text_options_chunk.removesuffix(", ")
