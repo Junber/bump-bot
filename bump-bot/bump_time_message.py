@@ -52,7 +52,7 @@ def get_embed(found_reactions: found_reactions_cache.FoundReactions):
 			for member in sorted(members, key=lambda x: x.display_name):
 				message_text_options_chunk += member.display_name
 				message_text_options_chunk += ", "
-			message_text = message_text_options_chunk.removesuffix(", ")
+			message_text_options_chunk = message_text_options_chunk.removesuffix(", ")
 		elif len(members) == len(members_who_voted):
 			message_text_options_chunk += "Everyone!" 
 
