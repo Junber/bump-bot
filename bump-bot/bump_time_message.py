@@ -1,11 +1,11 @@
 import discord
 
-import config
+import bump_bot_config as config
 import discord_client
 import found_reactions_cache
 
 #TODO: Refactor this and bump_message.py (into classes?) to avoid code duplication using the magic of functions and polymorphism
-def get_embed(found_reactions: found_reactions_cache.FoundReactions):
+def get_embed(found_reactions: found_reactions_cache.FoundReactions) -> discord.Embed:
 	members_who_voted = set()
 	for reaction in found_reactions:
 		members_who_voted |= found_reactions[reaction]
@@ -30,7 +30,7 @@ def get_embed(found_reactions: found_reactions_cache.FoundReactions):
 
 	message_text += "\n"
 
-	found_members = set()	
+	found_members: set[discord.Member] = set()	
 	message_text_options_chunk = ""
 	for reaction in config.get_bump_time_reactions():
 		members = set()
@@ -61,17 +61,20 @@ def get_embed(found_reactions: found_reactions_cache.FoundReactions):
 	message_text += message_text_options_chunk
 	return discord.Embed(title=config.get_bump_time_embed_title().format()).add_field(name=config.get_bump_time_embed_field_name(), value=message_text)
 
-async def send(channel: discord.TextChannel, argument: str):
+async def send(channel: discord.TextChannel, argument: str) -> discord.Message:
 	content = config.get_bump_time_message_content_prefix() + argument + config.get_bump_time_message_content_postfix()
 	message: discord.Message = await channel.send(content, embed=get_embed({}))	
 	for reaction in config.get_bump_time_reactions():
-		await message.add_reaction(discord_client.get_emoji(reaction)) # Await here because order is important
+		emoji = discord_client.get_emoji(reaction)
+		if emoji is not None:
+			await message.add_reaction(emoji) # Await here because order is important
 	found_reactions_cache.initialize_found_reactions(message, config.get_bump_time_reactions())
 	return message
 
 
-async def update(message: discord.Message):
+async def update(message: discord.Message) -> discord.Message:
 	return await message.edit(embed=get_embed(await found_reactions_cache.get_found_reactions(message, config.get_bump_time_reactions())))
 
-def handles(message: discord.Message):
-	return message.content.startswith(config.get_bump_time_message_content_prefix()) and message.content.endswith(config.get_bump_time_message_content_postfix())
+def handles(message: discord.Message) -> bool:
+	return bool(message.content.startswith(config.get_bump_time_message_content_prefix())
+	     and message.content.endswith(config.get_bump_time_message_content_postfix()))

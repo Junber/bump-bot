@@ -2,11 +2,11 @@ import asyncio
 from typing import Dict, List
 import discord
 
-import config
+import bump_bot_config as config
 import discord_client
 import found_reactions_cache
 
-def get_embed(found_reactions: found_reactions_cache.FoundReactions):
+def get_embed(found_reactions: found_reactions_cache.FoundReactions) -> discord.Embed:
 	members_who_voted = set()
 	for reaction in found_reactions:
 		members_who_voted |= found_reactions[reaction]
@@ -58,16 +58,18 @@ def get_embed(found_reactions: found_reactions_cache.FoundReactions):
 	
 	return discord.Embed(title=config.get_bump_embed_title()).add_field(name=config.get_bump_embed_field_name(), value=message_text)
 
-async def send(channel: discord.TextChannel):
+async def send(channel: discord.TextChannel) -> discord.Message:
 	message: discord.Message = await channel.send(config.get_bump_message_content(), embed=get_embed({}))	
 	for reaction in config.get_bump_reactions():
-		await message.add_reaction(discord_client.get_emoji(reaction)) # Await here because order is important
+		emoji = discord_client.get_emoji(reaction)
+		if emoji is not None:
+			await message.add_reaction(emoji) # Await here because order is important
 	found_reactions_cache.initialize_found_reactions(message, config.get_bump_reactions())
 	return message
 
 
-async def update(message: discord.Message):
+async def update(message: discord.Message) -> discord.Message:
 	return await message.edit(embed=get_embed(await found_reactions_cache.get_found_reactions(message, config.get_bump_reactions())))
 
-def handles(message: discord.Message):
-	return message.content == config.get_bump_message_content()
+def handles(message: discord.Message) -> bool:
+	return bool(message.content == config.get_bump_message_content())

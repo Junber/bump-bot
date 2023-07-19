@@ -2,11 +2,11 @@ import logging
 import os
 import discord
 
-import config
+import bump_bot_config as config
 
-client = None
+client: discord.Client | None = None
 
-def get_client():
+def get_client() -> discord.Client:
 	global client
 	if not client:
 		intents = discord.Intents.default()
@@ -16,7 +16,7 @@ def get_client():
 		
 	return client
 
-def run_client():
+def run_client() -> None:
 	handler = None
 	log_file_name = config.get_log_file_name()
 	if len(log_file_name) > 0:
@@ -24,7 +24,7 @@ def run_client():
 		handler = logging.FileHandler(filename=log_file_name, encoding='utf-8', mode='w')
 	get_client().run(config.get_token(), log_handler=handler, log_level=logging.DEBUG)
 
-def get_emoji(emoji_string: str):
+def get_emoji(emoji_string: str) -> discord.Emoji | str | None:
 	if emoji_string[0].isalpha():
 		return discord.utils.get(get_client().emojis, name=emoji_string)
 	return emoji_string
