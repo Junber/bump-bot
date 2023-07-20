@@ -3,6 +3,8 @@
 	"channel" : "scheduling-or-some-say-bump",
 	"required votes": 5,
 	"log file name": "logs/discord.log",
+	"calendar file name": "out/event.ics",
+	"calendar event summary": "Pen and Paper",
 	"bump message" : {
 		"message content" : "bump",
 		"embed title": "bump",

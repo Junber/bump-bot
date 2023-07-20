@@ -1,11 +1,38 @@
+import datetime
+import os
 import discord
+import icalendar # type: ignore
 
 import bump_bot_config as config
 import discord_client
 import found_reactions_cache
 
+def create_calendar(date: datetime.date, start_time: datetime.time) -> icalendar.Calendar:
+	cal = icalendar.Calendar()
+	cal.add('prodid', '-//Bump Bot//Bump Bot//')
+	cal.add('version', '2.0')
+
+	event = icalendar.Event()
+	event.add('summary', config.get_calendar_event_summary())
+	event.add('dtstart', datetime.datetime.combine(date, start_time))
+	event.add('dtend', datetime.datetime.combine(date, datetime.time(23,59,59)))
+	event.add('dtstamp', datetime.datetime.now())
+	cal.add_component(event)
+	return cal
+
+WEEKDAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+
 #TODO: Refactor this and bump_message.py (into classes?) to avoid code duplication using the magic of functions and polymorphism
-def get_embed(found_reactions: found_reactions_cache.FoundReactions) -> discord.Embed:
+def get_embed_and_files(
+		found_reactions: found_reactions_cache.FoundReactions,
+		weekday: str,
+		message_date: datetime.date) -> tuple[discord.Embed, list[discord.File]]:	
+
+	weekday_index = WEEKDAYS.index(weekday.lower())
+	date = message_date + datetime.timedelta(weekday_index - message_date.weekday())
+	if weekday_index < message_date.weekday():
+		date += datetime.timedelta(7)
+
 	members_who_voted = set()
 	for reaction in found_reactions:
 		members_who_voted |= found_reactions[reaction]
@@ -32,6 +59,7 @@ def get_embed(found_reactions: found_reactions_cache.FoundReactions) -> discord.
 
 	found_members: set[discord.Member] = set()	
 	message_text_options_chunk = ""
+	earliest_possible_time = ""
 	for reaction in config.get_bump_time_reactions():
 		members = set()
 		if reaction in found_reactions:
@@ -41,7 +69,8 @@ def get_embed(found_reactions: found_reactions_cache.FoundReactions) -> discord.
 		if len(members) > 0:
 			found_members |= members	
 			if len(found_members) == len(members_who_voted):
-				message_text += "**Earliest possible time: {}**\n\n".format(config.get_bump_time_reactions()[reaction])
+				earliest_possible_time = config.get_bump_time_reactions()[reaction]
+				message_text += "**Earliest possible time: {}**\n\n".format(earliest_possible_time)
 
 		message_text_options_chunk += " {} ({}): ".format(config.get_bump_time_reactions()[reaction], discord_client.get_emoji(reaction))
 
@@ -59,11 +88,26 @@ def get_embed(found_reactions: found_reactions_cache.FoundReactions) -> discord.
 		message_text_options_chunk += '\n'
 	
 	message_text += message_text_options_chunk
-	return discord.Embed(title=config.get_bump_time_embed_title().format()).add_field(name=config.get_bump_time_embed_field_name(), value=message_text)
+	embed = discord.Embed(title=config.get_bump_time_embed_title().format()).add_field(
+		name=config.get_bump_time_embed_field_name(),
+		value=message_text)
+	files = []
+
+	if len(members_who_voted) >= config.get_required_votes():
+		start_time = datetime.time.fromisoformat(earliest_possible_time)
+
+		os.makedirs(os.path.dirname(config.get_calendar_file_name()), exist_ok=True)
+		with open(config.get_calendar_file_name(), 'wb') as f:
+			f.write(create_calendar(date, start_time).to_ical())
+		
+		files.append(discord.File(config.get_calendar_file_name()))
+	
+	return (embed, files)
 
 async def send(channel: discord.TextChannel, argument: str) -> discord.Message:
 	content = config.get_bump_time_message_content_prefix() + argument + config.get_bump_time_message_content_postfix()
-	message: discord.Message = await channel.send(content, embed=get_embed({}))	
+	embed, files = get_embed_and_files({}, argument, datetime.date.today())
+	message: discord.Message = await channel.send(content, embed=embed, files=files)	
 	for reaction in config.get_bump_time_reactions():
 		emoji = discord_client.get_emoji(reaction)
 		if emoji is not None:
@@ -73,7 +117,10 @@ async def send(channel: discord.TextChannel, argument: str) -> discord.Message:
 
 
 async def update(message: discord.Message) -> discord.Message:
-	return await message.edit(embed=get_embed(await found_reactions_cache.get_found_reactions(message, config.get_bump_time_reactions())))
+	argument = message.content[len(config.get_bump_time_message_content_prefix()):-len(config.get_bump_time_message_content_postfix())]
+	reactions = await found_reactions_cache.get_found_reactions(message, config.get_bump_time_reactions())
+	embed, files = get_embed_and_files(reactions, argument, message.created_at.date())
+	return await message.edit(embed=embed, attachments=files)
 
 def handles(message: discord.Message) -> bool:
 	return bool(message.content.startswith(config.get_bump_time_message_content_prefix())

@@ -42,6 +42,12 @@ def get_shutdown_trigger() -> str:
 def get_log_trigger() -> str:
 	return config.get("log trigger", "")
 
+def get_calendar_file_name() -> str:
+	return config.get("calendar file name", "")
+
+def get_calendar_event_summary() -> str:
+	return config.get("calendar event summary", "")
+
 
 # Bump message
 def get_bump_message_config() -> dict[str, Any]:
