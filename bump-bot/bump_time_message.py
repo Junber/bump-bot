@@ -2,6 +2,7 @@ import datetime
 import os
 import discord
 import icalendar # type: ignore
+import editdistance # type: ignore
 
 import bump_bot_config as config
 import discord_client
@@ -20,6 +21,16 @@ def create_calendar(date: datetime.date, start_time: datetime.time) -> icalendar
 	cal.add_component(event)
 	return cal
 
+def find_closest_index(options: list[str], to_find: str) -> int:
+	closest_distance = 99999
+	closest_index = -1
+	for index, option in enumerate(options):
+		distance = editdistance.eval(option, to_find)
+		if distance < closest_distance:
+			closest_distance = distance
+			closest_index = index
+	return closest_index
+
 WEEKDAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
 
 #TODO: Refactor this and bump_message.py (into classes?) to avoid code duplication using the magic of functions and polymorphism
@@ -28,7 +39,7 @@ def get_embed_and_files(
 		weekday: str,
 		message_date: datetime.date) -> tuple[discord.Embed, list[discord.File]]:	
 
-	weekday_index = WEEKDAYS.index(weekday.lower())
+	weekday_index = find_closest_index(WEEKDAYS, weekday.lower())
 	date = message_date + datetime.timedelta(weekday_index - message_date.weekday())
 	if weekday_index < message_date.weekday():
 		date += datetime.timedelta(7)
