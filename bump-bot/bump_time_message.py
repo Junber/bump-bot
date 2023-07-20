@@ -2,7 +2,7 @@ import datetime
 import os
 import discord
 import icalendar # type: ignore
-import editdistance # type: ignore
+import pylev # type: ignore
 
 import bump_bot_config as config
 import discord_client
@@ -25,7 +25,7 @@ def find_closest_index(options: list[str], to_find: str) -> int:
 	closest_distance = 99999
 	closest_index = -1
 	for index, option in enumerate(options):
-		distance = editdistance.eval(option, to_find)
+		distance = pylev.levenshtein(option, to_find)
 		if distance < closest_distance:
 			closest_distance = distance
 			closest_index = index
