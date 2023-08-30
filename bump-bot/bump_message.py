@@ -67,6 +67,7 @@ async def send(channel: discord.TextChannel) -> discord.Message:
     message: discord.Message = await channel.send(
         config.get_bump_message_content(), embed=get_embed({})
     )
+    await found_reactions_cache.initialize_empty_reactions(message.id)
     for reaction in config.get_bump_reactions():
         emoji = discord_client.get_emoji(reaction)
         if emoji is not None:

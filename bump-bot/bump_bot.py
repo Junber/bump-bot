@@ -105,9 +105,13 @@ def main() -> int:
             return
 
         if added:
-            found_reactions_cache.add_found_reaction(payload.message_id, payload.emoji, member)
+            await found_reactions_cache.add_found_reaction(
+                payload.message_id, payload.emoji, member
+            )
         else:
-            found_reactions_cache.remove_found_reaction(payload.message_id, payload.emoji, member)
+            await found_reactions_cache.remove_found_reaction(
+                payload.message_id, payload.emoji, member
+            )
 
         if client.user is None or payload.user_id == client.user.id:
             return

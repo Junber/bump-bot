@@ -127,6 +127,7 @@ async def send(channel: discord.TextChannel, argument: str) -> discord.Message:
     )
     embed, files = get_embed_and_files({}, argument, datetime.date.today())
     message: discord.Message = await channel.send(content, embed=embed, files=files)
+    await found_reactions_cache.initialize_empty_reactions(message.id)
     for reaction in config.get_bump_time_reactions():
         emoji = discord_client.get_emoji(reaction)
         if emoji is not None:
