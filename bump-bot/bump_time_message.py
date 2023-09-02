@@ -4,6 +4,7 @@ import discord
 import icalendar  # type: ignore
 
 import bump_bot_config as config
+from voting_utils import member_list
 import discord_client
 import found_reactions_cache
 from utils import find_closest_index
@@ -34,7 +35,8 @@ WEEKDAYS = [
 ]
 
 
-# TODO: Refactor this and bump_message.py (into classes?) to avoid code duplication using the magic of functions and polymorphism
+# TODO: Put more shared code between this and bump_message.py into voting_utils.py
+# TODO: Then: Make class per bot command
 def get_embed_and_files(
     found_reactions: found_reactions_cache.FoundReactions,
     weekday: str,
@@ -89,16 +91,7 @@ def get_embed_and_files(
             discord_client.get_emoji(reaction),
         )
 
-        if len(members) == 0:
-            message_text_options_chunk += "-"
-        elif len(members) < len(members_who_voted):
-            for member in sorted(members, key=lambda x: x.display_name):
-                message_text_options_chunk += member.display_name
-                message_text_options_chunk += ", "
-            message_text_options_chunk = message_text_options_chunk.removesuffix(", ")
-        elif len(members) == len(members_who_voted):
-            message_text_options_chunk += "Everyone!"
-
+        message_text_options_chunk += member_list(members, members_who_voted, "-")
         message_text_options_chunk += "\n"
 
     message_text += message_text_options_chunk

@@ -3,6 +3,7 @@ from typing import Dict, List
 import discord
 
 import bump_bot_config as config
+from voting_utils import member_list
 import discord_client
 import found_reactions_cache
 
@@ -46,16 +47,7 @@ def get_embed(found_reactions: found_reactions_cache.FoundReactions) -> discord.
             config.get_bump_reactions()[reaction], discord_client.get_emoji(reaction)
         )
 
-        if len(members) == 0:
-            message_text += "No one"
-        elif len(members) < len(members_who_voted):
-            for member in sorted(members, key=lambda x: x.display_name):
-                message_text += member.display_name
-                message_text += ", "
-            message_text = message_text.removesuffix(", ")
-        elif len(members) == len(members_who_voted):
-            message_text += "Everyone!"
-
+        message_text += member_list(members, members_who_voted, "No one")
         message_text += "\n"
 
     return discord.Embed(title=config.get_bump_embed_title()).add_field(
