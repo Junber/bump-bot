@@ -1,69 +1,69 @@
 {
-	"voting" : {
+	"voting": {
 		"trigger": "bump",
-		"channel" : "scheduling-or-some-say-bump",
+		"channel": "scheduling-or-some-say-bump",
 		"required votes": 5,
-		"bump message" : {
-			"message content" : "bump",
+		"bump message": {
+			"message content": "bump",
 			"embed title": "bump",
 			"embed field name": "bump",
 			"reactions": {
-				"Ⓜ️" : "Monday",
-				"NormalTuesday" : "Tuesday",
-				"🇼" : "Wednesday",
-				"🇹" : "Thursday",
-				"🇫" : "Friday",
-				"postnutclearitbee" : "Saturday",
-				"Breen" : "Sunday"
+				"Ⓜ️": "Monday",
+				"NormalTuesday": "Tuesday",
+				"🇼": "Wednesday",
+				"🇹": "Thursday",
+				"🇫": "Friday",
+				"postnutclearitbee": "Saturday",
+				"Breen": "Sunday"
 			}
 		},
-		"bump time message" : {
-			"message content prefix" : "",
-			"message content postfix" : " it is then. Bump!",
+		"bump time message": {
+			"message content prefix": "",
+			"message content postfix": " it is then. Bump!",
 			"embed title": "bump time",
 			"embed field name": "bump time",
 			"reactions": {
-				"4️⃣" : "14:00",
-				"5️⃣" : "15:00",
-				"6️⃣" : "16:00",
-				"7️⃣" : "17:00",
-				"8️⃣" : "18:00",
-				"9️⃣" : "19:00",
-				"🔟" : "20:00"
+				"4️⃣": "14:00",
+				"5️⃣": "15:00",
+				"6️⃣": "16:00",
+				"7️⃣": "17:00",
+				"8️⃣": "18:00",
+				"9️⃣": "19:00",
+				"🔟": "20:00"
 			},
 			"calendar file name": "out/event.ics",
 			"calendar event summary": "Pen and Paper"
 		}
 	},
-	"logging" : {
+	"logging": {
 		"log file name": "logs/discord.log",
-		"channel" : "bot",
-		"trigger" : "log",
-		"message content" : "I guess I did somwethinwg wwonwg~ Sowwi~ *screeches*"
+		"channel": "bot",
+		"trigger": "log",
+		"message content": "I guess I did somwethinwg wwonwg~ Sowwi~ *screeches*"
 	},
-	"shutdown" : {
-		"channel" : "bot",
-		"trigger" : "shutdown",
-		"message content" :"Urghhhhhhh!!!!!"
+	"shutdown": {
+		"channel": "bot",
+		"trigger": "shutdown",
+		"message content": "Urghhhhhhh!!!!!"
 	},
-	"bookstack" : {		
-		"channel" : "project-isaaw",
-		"trigger" : "seaShanty",
-		"exported emoji" : "bump",
-		"export all" : {
-			"channel" : "bot",
-			"trigger" : "export",
-			"message content" : "Wow, is that really the kind of thing I have to do these days? Have fun with your exported data. I'm sure it will be great."
+	"bookstack": {
+		"channel": "project-isaaw",
+		"trigger": "seaShanty",
+		"exported emoji": "bump",
+		"export all": {
+			"channel": "bot",
+			"trigger": "export",
+			"message content": "Wow, is that really the kind of thing I have to do these days? Have fun with your exported data. I'm sure it will be great."
 		},
-		"unexport all" : {
-			"channel" : "bot",
-			"trigger" : "unexport",
-			"message content" : "Yeah, yeah, it's all gone already, jeez, make up your mind."
+		"unexport all": {
+			"channel": "bot",
+			"trigger": "unexport",
+			"message content": "Yeah, yeah, it's all gone already, jeez, make up your mind."
 		},
-		"clear emoji" : {
-			"channel" : "bot",
-			"trigger" : "clear export emoji",
-			"message content" : "Even cleaning up your mess now, huh. Well, consider it done, *esteemed* human."
+		"clear emoji": {
+			"channel": "bot",
+			"trigger": "clear export emoji",
+			"message content": "Even cleaning up your mess now, huh. Well, consider it done, *esteemed* human."
 		}
 	}
 }
