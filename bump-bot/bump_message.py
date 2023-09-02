@@ -82,4 +82,7 @@ async def update(message: discord.Message) -> discord.Message:
 
 
 def handles(message: discord.Message) -> bool:
-    return bool(message.content == config.get_bump_message_content())
+    return (
+        bool(message.content == config.get_bump_message_content())
+        and message.author == discord_client.get_client().user
+    )

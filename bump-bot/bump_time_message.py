@@ -150,4 +150,5 @@ def handles(message: discord.Message) -> bool:
     return bool(
         message.content.startswith(config.get_bump_time_message_content_prefix())
         and message.content.endswith(config.get_bump_time_message_content_postfix())
+        and message.author == discord_client.get_client().user
     )
