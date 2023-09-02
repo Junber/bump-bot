@@ -93,7 +93,7 @@ def get_bump_reactions() -> dict[str, str]:
 
 # Voting::Bump time message
 def get_bump_time_message_config() -> dict[str, Any]:
-    return get_config().get("bump time message", {})
+    return get_voting().get("bump time message", {})
 
 
 def get_bump_time_message_content_prefix() -> str:
