@@ -152,6 +152,10 @@ def main() -> int:
     async def on_raw_reaction_remove(payload: discord.RawReactionActionEvent) -> None:
         await reaction_changed(payload, False)
 
+    @client.event  # type: ignore
+    async def on_raw_message_edit(payload: discord.RawMessageUpdateEvent) -> None:
+        message_cache.remove_message(payload.message_id)
+
     discord_client.run_client()
     return 0
 
