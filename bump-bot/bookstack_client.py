@@ -60,6 +60,15 @@ class Bookstack:
             raise
         return response.json()
 
+    def get_all(self, endpoint: str) -> dict:
+        offset = 0
+        result = self.get(endpoint)
+        while result["total"] > len(result["data"]):
+            offset += 100
+            new_result = self.get(endpoint + "?offset=" + str(offset))
+            result["data"] += new_result["data"]
+        return result
+
     def delete(self, endpoint: str):
         response = requests.delete(self.get_url(endpoint), headers=self.get_header())
         try:
@@ -72,13 +81,13 @@ class Bookstack:
 
     # Helpers
     def rebuild_book_cache(self):
-        self.book_cache = self.get("books")
+        self.book_cache = self.get_all("books")
 
     def rebuild_chapter_cache(self):
-        self.chapter_cache = self.get("chapters")
+        self.chapter_cache = self.get_all("chapters")
 
     def rebuild_page_cache(self):
-        self.page_cache = self.get("pages")
+        self.page_cache = self.get_all("pages")
 
     def find_book_id(self, name: str) -> int:
         for book in self.book_cache["data"]:
