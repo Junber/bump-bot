@@ -110,11 +110,11 @@ class Bookstack:
             if book_id < 0:
                 return -1
 
-        page_id = self.find_page_id(book_id, self.find_chapter_id(book_id, chapter[0]), name)
+        page_id = self.find_page_id(book_id, self.find_chapter_id(book_id, chapter), name)
         if page_id < 0:
             self.rebuild_chapter_cache()
             self.rebuild_page_cache()
-            page_id = self.find_page_id(book_id, self.find_chapter_id(book_id, chapter[0]), name)
+            page_id = self.find_page_id(book_id, self.find_chapter_id(book_id, chapter), name)
         return page_id
 
     def create_book(self, name: str) -> int:
