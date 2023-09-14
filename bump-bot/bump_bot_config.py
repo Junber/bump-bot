@@ -62,14 +62,6 @@ def get_required_votes() -> int:
     return get_voting().get("required votes", 0)
 
 
-def get_calendar_file_name() -> str:
-    return get_voting().get("calendar file name", "")
-
-
-def get_calendar_event_summary() -> str:
-    return get_voting().get("calendar event summary", "")
-
-
 # Voting::Bump message
 def get_bump_message_config() -> dict[str, Any]:
     return get_voting().get("bump message", {})
@@ -114,6 +106,14 @@ def get_bump_time_embed_field_name() -> str:
 
 def get_bump_time_reactions() -> dict[str, str]:
     return get_bump_time_message_config().get("reactions", {})
+
+
+def get_calendar_file_name() -> str:
+    return get_bump_time_message_config().get("calendar file name", "")
+
+
+def get_calendar_event_summary() -> str:
+    return get_bump_time_message_config().get("calendar event summary", "")
 
 
 # Logging
