@@ -108,10 +108,6 @@ def get_bump_time_reactions() -> dict[str, str]:
     return get_bump_time_message_config().get("reactions", {})
 
 
-def get_calendar_file_name() -> str:
-    return get_bump_time_message_config().get("calendar file name", "")
-
-
 def get_calendar_event_summary() -> str:
     return get_bump_time_message_config().get("calendar event summary", "")
 

@@ -162,4 +162,5 @@ cython_debug/
 .vscode/
 config/token.txt
 config/bookstack.json
+config/calendar.json
 out/
