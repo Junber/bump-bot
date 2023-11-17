@@ -40,8 +40,8 @@ class Calendar:
         for event in self.find_events(date):
             calendar_time = event.icalendar_component["dtstart"].dt  # type: ignore
             if (
-                calendar_time is datetime.datetime
-                and start_time is datetime.datetime
+                isinstance(calendar_time, datetime.datetime)
+                and isinstance(start_time, datetime.datetime)
                 and calendar_time.astimezone() == start_time.astimezone()
             ):
                 return False
