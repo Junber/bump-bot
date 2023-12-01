@@ -62,6 +62,19 @@ def get_required_votes() -> int:
     return get_voting().get("required votes", 0)
 
 
+# Cards
+def get_cards() -> dict[str, Any]:
+    return get_config().get("cards", {})
+
+
+def get_cards_trigger() -> str:
+    return get_cards().get("trigger", "")
+
+
+def get_cards_channel_name() -> str:
+    return get_cards().get("channel", "")
+
+
 # Voting::Bump message
 def get_bump_message_config() -> dict[str, Any]:
     return get_voting().get("bump message", {})

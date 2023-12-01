@@ -64,5 +64,9 @@
 			"trigger": "clear export emoji",
 			"message content": "Even cleaning up your mess now, huh. Well, consider it done, *esteemed* human."
 		}
+	},
+	"cards": {
+		"channel": "card-pulling",
+		"trigger": "pull"
 	}
 }

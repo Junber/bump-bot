@@ -12,6 +12,7 @@ import bump_message
 import bump_time_message
 from bookstack_client import bookstack
 import bookstack_export
+import cards
 
 
 def main() -> int:
@@ -34,6 +35,10 @@ def main() -> int:
 
         if not isinstance(message.channel, discord.TextChannel):
             return
+
+        if message.channel.name == config.get_cards_channel_name():
+            if message.content == config.get_cards_trigger():
+                await message.channel.send(view=cards.create_draw_view())
 
         if message.channel.name == config.get_voting_channel_name():
             if message.content == config.get_voting_trigger():
