@@ -78,7 +78,10 @@ async def remove_found_reaction(
     message_id: int, emoji: discord.PartialEmoji, member: discord.Member
 ) -> None:
     async with cache_lock:
-        if message_id in found_reactions_cache:
+        if (
+            message_id in found_reactions_cache
+            and member in found_reactions_cache[message_id][emoji.name]
+        ):
             found_reactions_cache[message_id][emoji.name].remove(member)
             if member != discord_client.get_client().user:
                 found_reactions_cache_without_client[message_id][emoji.name].remove(member)

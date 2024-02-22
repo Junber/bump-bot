@@ -141,6 +141,9 @@ class BumpTimeCommand(VotingCommand):
 
     @override
     async def on_reaction_changed(self, message: discord.Message, reaction_added: bool) -> None:
+        if not await self.cancelable_wait():
+            return
+
         argument = message.content[
             len(config.get_bump_time_message_content_prefix()) : -len(
                 config.get_bump_time_message_content_postfix()

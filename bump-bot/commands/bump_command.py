@@ -91,6 +91,9 @@ class BumpCommand(VotingCommand):
 
     @override
     async def on_reaction_changed(self, message: discord.Message, reaction_added: bool) -> None:
+        if not await self.cancelable_wait():
+            return
+
         await message.edit(
             embed=self.get_embed(await found_reactions_cache.get_found_reactions(message))
         )

@@ -8,6 +8,9 @@ from commands.command import ReactionsCommand
 
 # TODO: Extract more common functionality to this class
 class VotingCommand(ReactionsCommand):
+    wait_task: asyncio.Task | None = None
+    wait_task_lock = asyncio.Lock()
+
     @staticmethod
     async def replace_pins(
         channel: discord.TextChannel,
@@ -41,6 +44,17 @@ class VotingCommand(ReactionsCommand):
             return "Everyone!"
         else:
             return "[Internal error]"
+
+    async def cancelable_wait(self) -> bool:
+        async with self.wait_task_lock:
+            if self.wait_task:
+                self.wait_task.cancel()
+            self.wait_task = asyncio.create_task(asyncio.sleep(1))
+        try:
+            await self.wait_task
+        except asyncio.CancelledError:
+            return False
+        return True
 
     @abstractmethod
     async def send_poll(
