@@ -1,6 +1,9 @@
 import random
-
+from typing import override
 import discord
+
+import bump_bot_config as config
+from commands.command import BasicCommand
 
 # The code in this file was externally provided and is used mostly as-is.
 # Terms and conditions may apply
@@ -376,3 +379,13 @@ def create_draw_view() -> discord.ui.View:
     view = discord.ui.View()
     view.add_item(BoosterSelect())
     return view
+
+
+class CardCommand(BasicCommand):
+    @override
+    def get_config(self) -> config.BasicCommandConfig:
+        return config.get_cards()
+
+    @override
+    async def on_message(self, message: discord.Message, channel: discord.TextChannel) -> None:
+        await message.channel.send(self.get_message_content(), view=create_draw_view())

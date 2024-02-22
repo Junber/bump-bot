@@ -67,6 +67,7 @@
 	},
 	"cards": {
 		"channel": "card-pulling",
-		"trigger": "pull"
+		"trigger": "pull",
+		"message content": "Choose a booster pack"
 	}
 }
