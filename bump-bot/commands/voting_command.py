@@ -3,13 +3,14 @@ import asyncio
 import functools
 from typing import Any, Callable, Coroutine, override
 import discord
+
+from cancelable_wait import CancelableWait
 from commands.command import ReactionsCommand
 
 
 # TODO: Extract more common functionality to this class
 class VotingCommand(ReactionsCommand):
-    wait_task: asyncio.Task | None = None
-    wait_task_lock = asyncio.Lock()
+    update_message_wait = CancelableWait(1.0)
 
     @staticmethod
     async def replace_pins(
@@ -44,17 +45,6 @@ class VotingCommand(ReactionsCommand):
             return "Everyone!"
         else:
             return "[Internal error]"
-
-    async def cancelable_wait(self) -> bool:
-        async with self.wait_task_lock:
-            if self.wait_task:
-                self.wait_task.cancel()
-            self.wait_task = asyncio.create_task(asyncio.sleep(1))
-        try:
-            await self.wait_task
-        except asyncio.CancelledError:
-            return False
-        return True
 
     @abstractmethod
     async def send_poll(
