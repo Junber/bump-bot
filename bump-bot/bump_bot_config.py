@@ -62,6 +62,10 @@ def get_required_votes() -> int:
     return get_voting().get("required votes", 0)
 
 
+def get_voting_cancel_reaction() -> str:
+    return get_voting().get("cancel reaction", "")
+
+
 # Cards
 def get_cards() -> BasicCommandConfig:
     return BasicCommandConfig(get_config().get("cards", {}))

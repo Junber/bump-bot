@@ -151,6 +151,12 @@ class BumpTimeCommand(VotingCommand):
         ]
         reactions = await found_reactions_cache.get_found_reactions(message)
         date = find_date(argument, message.created_at.date())
+
+        if len(reactions[config.get_voting_cancel_reaction()]):
+            await message.edit(content="This poll was canceled", embed=None)
+            calendar.delete_events(date)
+            return
+
         (embed, time) = self.get_embed_and_time(reactions, date)
         await message.edit(embed=embed)
 

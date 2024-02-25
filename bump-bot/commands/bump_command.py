@@ -128,10 +128,13 @@ class BumpCommand(VotingCommand):
         if not await self.update_message_wait.wait():
             return
 
-        (embed, result) = self.get_embed_and_result(
-            await found_reactions_cache.get_found_reactions(message)
-        )
+        reactions = await found_reactions_cache.get_found_reactions(message)
 
+        if len(reactions[config.get_voting_cancel_reaction()]):
+            await message.edit(content="This poll was canceled", embed=None)
+            return
+
+        (embed, result) = self.get_embed_and_result(reactions)
         await message.edit(embed=embed)
 
         if result is not None and isinstance(message.channel, discord.TextChannel):

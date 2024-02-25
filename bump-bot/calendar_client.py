@@ -33,6 +33,10 @@ class Calendar:
             event=True,
         )
 
+    def delete_events(self, date: datetime.date) -> None:
+        for event in self.find_events(date):
+            event.delete()
+
     def create_event(self, date: datetime.date, time: datetime.time | None) -> bool:
         start_time = None
         if time:

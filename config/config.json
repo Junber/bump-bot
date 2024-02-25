@@ -3,6 +3,7 @@
 		"trigger": "bump",
 		"channel": "scheduling-or-some-say-bump",
 		"required votes": 5,
+		"cancel reaction": "❌",
 		"bump message": {
 			"message content": "bump",
 			"embed title": "bump",
