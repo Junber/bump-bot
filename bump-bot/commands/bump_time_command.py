@@ -1,5 +1,5 @@
 import datetime
-from typing import Tuple, override
+from typing import Tuple
 import discord
 
 import bump_bot_config as config
@@ -94,7 +94,7 @@ class BumpTimeCommand(VotingCommand):
 
         return (embed, earliest_datetime)
 
-    @override
+    # @override
     def handles_message(self, message: discord.Message, channel: discord.TextChannel) -> bool:
         return (
             channel.name == config.get_voting_channel_name()
@@ -102,7 +102,7 @@ class BumpTimeCommand(VotingCommand):
             and message.content.startswith(config.get_voting_trigger())
         )
 
-    @override
+    # @override
     async def send_poll(
         self, message: discord.Message, channel: discord.TextChannel
     ) -> discord.Message:
@@ -125,13 +125,13 @@ class BumpTimeCommand(VotingCommand):
 
         return poll_message
 
-    @override
+    # @override
     def handles_reactions_in_channel(
         self, channel: discord.TextChannel, emoji: discord.PartialEmoji
     ) -> bool:
         return channel.name == config.get_voting_channel_name()
 
-    @override
+    # @override
     def handles_reactions(self, message: discord.Message) -> bool:
         return (
             message.content.startswith(config.get_bump_time_message_content_prefix())
@@ -139,7 +139,7 @@ class BumpTimeCommand(VotingCommand):
             and message.author == discord_client.get_client().user
         )
 
-    @override
+    # @override
     async def on_reaction_changed(self, message: discord.Message, reaction_added: bool) -> None:
         if not await self.update_message_wait.wait():
             return

@@ -1,7 +1,7 @@
 from abc import abstractmethod
 import asyncio
 import functools
-from typing import Any, Callable, Coroutine, override
+from typing import Any, Callable, Coroutine
 import discord
 
 from cancelable_wait import CancelableWait
@@ -52,7 +52,7 @@ class VotingCommand(ReactionsCommand):
     ) -> discord.Message:
         pass
 
-    @override
+    # @override
     async def on_message(self, message: discord.Message, channel: discord.TextChannel) -> None:
         await self.replace_pins(
             channel,

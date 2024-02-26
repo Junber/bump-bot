@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import override
 import discord
 
 import bump_bot_config as config
@@ -23,7 +22,7 @@ class BasicCommand(Command):
     def get_message_content(self) -> str:
         return self.get_config().get_message_content()
 
-    @override
+    # @override
     def handles_message(self, message: discord.Message, channel: discord.TextChannel) -> bool:
         command_config = self.get_config()
         return (

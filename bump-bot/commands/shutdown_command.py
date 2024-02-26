@@ -1,4 +1,3 @@
-from typing import override
 import discord
 
 from commands.command import BasicCommand
@@ -7,11 +6,11 @@ import discord_client
 
 
 class ShutdownCommand(BasicCommand):
-    @override
+    # @override
     def get_config(self) -> config.BasicCommandConfig:
         return config.get_shutdown()
 
-    @override
+    # @override
     async def on_message(self, message: discord.Message, channel: discord.TextChannel) -> None:
         await channel.send(self.get_message_content())
         await discord_client.get_client().close()

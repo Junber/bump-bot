@@ -1,5 +1,4 @@
 import random
-from typing import override
 import discord
 
 import bump_bot_config as config
@@ -382,10 +381,10 @@ def create_draw_view() -> discord.ui.View:
 
 
 class CardCommand(BasicCommand):
-    @override
+    # @override
     def get_config(self) -> config.BasicCommandConfig:
         return config.get_cards()
 
-    @override
+    # @override
     async def on_message(self, message: discord.Message, channel: discord.TextChannel) -> None:
         await message.channel.send(self.get_message_content(), view=create_draw_view())

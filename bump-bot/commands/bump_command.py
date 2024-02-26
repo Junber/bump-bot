@@ -1,5 +1,5 @@
 import asyncio
-from typing import Tuple, override
+from typing import Tuple
 import discord
 
 from cancelable_wait import CancelableWait
@@ -71,14 +71,14 @@ class BumpCommand(VotingCommand):
             result,
         )
 
-    @override
+    # @override
     def handles_message(self, message: discord.Message, channel: discord.TextChannel) -> bool:
         return (
             channel.name == config.get_voting_channel_name()
             and message.content == config.get_voting_trigger()
         )
 
-    @override
+    # @override
     async def send_poll(
         self, message: discord.Message, channel: discord.TextChannel
     ) -> discord.Message:
@@ -93,13 +93,13 @@ class BumpCommand(VotingCommand):
                 await poll_message.add_reaction(emoji)  # Await here because order is important
         return poll_message
 
-    @override
+    # @override
     def handles_reactions_in_channel(
         self, channel: discord.TextChannel, emoji: discord.PartialEmoji
     ) -> bool:
         return channel.name == config.get_voting_channel_name()
 
-    @override
+    # @override
     def handles_reactions(self, message: discord.Message) -> bool:
         return (
             bool(message.content == config.get_bump_message_content())
@@ -123,7 +123,7 @@ class BumpCommand(VotingCommand):
         else:
             await channel.send("Multiple days work. Sort that one out yourselves.")
 
-    @override
+    # @override
     async def on_reaction_changed(self, message: discord.Message, reaction_added: bool) -> None:
         if not await self.update_message_wait.wait():
             return
