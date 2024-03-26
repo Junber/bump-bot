@@ -130,7 +130,9 @@ class BumpCommand(VotingCommand):
 
         reactions = await found_reactions_cache.get_found_reactions(message)
 
-        if len(reactions[config.get_voting_cancel_reaction()]):
+        if config.get_voting_cancel_reaction() in reactions and len(
+            reactions[config.get_voting_cancel_reaction()]
+        ):
             await message.edit(content="This poll was canceled", embed=None)
             return
 
