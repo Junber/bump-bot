@@ -95,7 +95,7 @@ class BumpTimeCommand(VotingCommand):
         return (embed, earliest_datetime)
 
     # @override
-    def handles_message(self, message: discord.Message, channel: discord.TextChannel) -> bool:
+    async def handles_message(self, message: discord.Message, channel: discord.TextChannel) -> bool:
         return (
             channel.name == config.get_voting_channel_name()
             and message.content != config.get_voting_trigger()

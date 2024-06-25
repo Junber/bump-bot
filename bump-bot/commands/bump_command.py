@@ -11,7 +11,8 @@ import found_reactions_cache
 
 
 class BumpCommand(VotingCommand):
-    announce_results_wait = CancelableWait(300.0)
+    announce_results_wait = CancelableWait(30.0)
+    last_result: list[str] | None = None
 
     @staticmethod
     def get_embed_and_result(
@@ -61,7 +62,7 @@ class BumpCommand(VotingCommand):
             message_text += "\n"
 
         result = None
-        if len(members_who_voted) >= config.get_required_votes():
+        if len(members_who_voted) >= config.get_required_votes() or len(possible_days) == 0:
             result = possible_days
 
         return (
@@ -72,11 +73,11 @@ class BumpCommand(VotingCommand):
         )
 
     # @override
-    def handles_message(self, message: discord.Message, channel: discord.TextChannel) -> bool:
-        return (
-            channel.name == config.get_voting_channel_name()
-            and message.content == config.get_voting_trigger()
-        )
+    async def handles_message(self, message: discord.Message, channel: discord.TextChannel) -> bool:
+        if channel.name != config.get_voting_channel_name():
+            return False
+        await self.announce_results_wait.cancel()
+        return message.content == config.get_voting_trigger()
 
     # @override
     async def send_poll(
@@ -121,7 +122,9 @@ class BumpCommand(VotingCommand):
             # TODO: avoid creating new instance here
             await BumpTimeCommand().on_message(bump_time_message, channel)
         else:
-            await channel.send("Multiple days work. Sort that one out yourselves.")
+            await channel.send(
+                "Multiple days ({}) work. Sort that one out yourselves.".format(", ".join(result))
+            )
 
     # @override
     async def on_reaction_changed(self, message: discord.Message, reaction_added: bool) -> None:
@@ -139,5 +142,10 @@ class BumpCommand(VotingCommand):
         (embed, result) = self.get_embed_and_result(reactions)
         await message.edit(embed=embed)
 
-        if result is not None and isinstance(message.channel, discord.TextChannel):
+        if (
+            result is not None
+            and result != self.last_result
+            and isinstance(message.channel, discord.TextChannel)
+        ):
             asyncio.create_task(self.announce_results(result, message.channel))
+        self.last_result = result

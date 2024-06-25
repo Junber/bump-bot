@@ -10,9 +10,8 @@ class CancelableWait:
         self.length = l
 
     async def wait(self) -> bool:
+        await self.cancel()
         async with self.wait_task_lock:
-            if self.wait_task:
-                self.wait_task.cancel()
             self.wait_task = asyncio.create_task(asyncio.sleep(self.length))
         try:
             await self.wait_task
@@ -20,3 +19,9 @@ class CancelableWait:
             return False
         self.wait_task = None
         return True
+
+    async def cancel(self) -> None:
+        if self.wait_task:
+            async with self.wait_task_lock:
+                self.wait_task.cancel()
+                self.wait_task = None

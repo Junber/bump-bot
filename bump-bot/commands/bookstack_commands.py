@@ -8,7 +8,7 @@ import bookstack_export
 
 class BookstackReactionsCommand(ReactionsCommand):
     # @override
-    def handles_message(self, message: discord.Message, channel: discord.TextChannel) -> bool:
+    async def handles_message(self, message: discord.Message, channel: discord.TextChannel) -> bool:
         return False
 
     # @override

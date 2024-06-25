@@ -6,7 +6,7 @@ import bump_bot_config as config
 
 class Command(ABC):
     @abstractmethod
-    def handles_message(self, message: discord.Message, channel: discord.TextChannel) -> bool:
+    async def handles_message(self, message: discord.Message, channel: discord.TextChannel) -> bool:
         pass
 
     @abstractmethod
@@ -23,7 +23,7 @@ class BasicCommand(Command):
         return self.get_config().get_message_content()
 
     # @override
-    def handles_message(self, message: discord.Message, channel: discord.TextChannel) -> bool:
+    async def handles_message(self, message: discord.Message, channel: discord.TextChannel) -> bool:
         command_config = self.get_config()
         return (
             channel.name == command_config.get_channel_name()

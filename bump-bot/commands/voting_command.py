@@ -6,6 +6,7 @@ import discord
 
 from cancelable_wait import CancelableWait
 from commands.command import ReactionsCommand
+import discord_client
 
 
 # TODO: Extract more common functionality to this class
@@ -19,7 +20,8 @@ class VotingCommand(ReactionsCommand):
     ) -> None:
         async with asyncio.TaskGroup() as tg:
             for pinned in await channel.pins():  # TODO: Cache pins?
-                tg.create_task(pinned.unpin())
+                if pinned.author == discord_client.get_client().user:
+                    tg.create_task(pinned.unpin())
             new_message = await new_pin_function()
             tg.create_task(new_message.pin())
 

@@ -39,7 +39,7 @@ def main() -> int:
             return
 
         for command in commands:
-            if command.handles_message(message, message.channel):
+            if await command.handles_message(message, message.channel):
                 await command.on_message(message, message.channel)
 
     async def reaction_changed(payload: discord.RawReactionActionEvent, added: bool) -> None:
