@@ -1,6 +1,7 @@
 import asyncio
 from typing import AsyncGenerator
 import discord
+import pylev
 
 from utils import find_closest_index, get_all_message
 from bookstack_client import bookstack
@@ -64,15 +65,27 @@ chapters = {
     "Pet (I've heard those exist now?)": ("Pets", ""),
     "Artefact / Weapon / Item / Hat / Pet / Mystery": ("Pets", ""),
 }
+max_parse_distance = 3
 
 
-def extract(line: str, base_prefix: str) -> tuple[bool, str]:
-    for format in formats:
-        prefix = format.format(base_prefix)
-        if line.lower().startswith(prefix.lower()):
-            return True, line[len(prefix) :].strip()
+def prefix_levenshtein(prefix: str, string: str) -> int:
+    return pylev.levenshtein(prefix.lower(), string.lower()[: min(len(prefix), len(string))])
 
-    return False, ""
+
+def extract(line: str) -> tuple[int, str, str]:
+    best_distance = 99999
+    best_result_name = ""
+    best_line = ""
+    for base_prefix, result_name in extract_description:
+        for format in formats:
+            prefix = format.format(base_prefix)
+            distance = prefix_levenshtein(prefix, line)
+            if distance < best_distance:
+                best_distance = distance
+                best_result_name = result_name
+                best_line = line[len(prefix) :].strip()
+
+    return best_distance, best_result_name, best_line
 
 
 def parse(message: str) -> dict:
@@ -80,16 +93,15 @@ def parse(message: str) -> dict:
     last_result_name = ""
     for line in message.split("\n"):
         found = False
-        for base_prefix, result_name in extract_description:
-            success, extracted = extract(line, base_prefix)
-            if success:
-                if base_prefix in result:
-                    result[result_name] += "  \n" + extracted
-                else:
-                    result[result_name] = extracted
-                last_result_name = result_name
-                found = True
-                break
+        distance, result_name, extracted = extract(line)
+        if distance <= max_parse_distance:
+            if result_name in result:
+                result[result_name] += "  \n" + extracted
+            else:
+                result[result_name] = extracted
+            last_result_name = result_name
+            found = True
+            break
         if not found:
             result[last_result_name] += "  \n" + line.strip()
     return result

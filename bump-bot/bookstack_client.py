@@ -17,13 +17,16 @@ class Bookstack:
         if not os.path.exists("config/bookstack.json"):
             return
 
-        self.valid = True
         with open("config/bookstack.json", "r", encoding="utf-8") as config_file:
             self.config = json.loads(config_file.read())
 
-        self.rebuild_book_cache()
-        self.rebuild_chapter_cache()
-        self.rebuild_page_cache()
+        try:
+            self.rebuild_book_cache()
+            self.rebuild_chapter_cache()
+            self.rebuild_page_cache()
+            self.valid = True
+        except:
+            pass
 
     # Generic
     def get_url(self, endpoint: str) -> str:

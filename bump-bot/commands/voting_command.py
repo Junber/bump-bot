@@ -49,14 +49,12 @@ class VotingCommand(ReactionsCommand):
             return "[Internal error]"
 
     @abstractmethod
-    async def send_poll(
-        self, message: discord.Message, channel: discord.TextChannel
-    ) -> discord.Message:
+    async def send_poll(self, message: discord.Message) -> discord.Message:
         pass
 
     # @override
     async def on_message(self, message: discord.Message, channel: discord.TextChannel) -> None:
         await self.replace_pins(
             channel,
-            functools.partial(self.send_poll, message, channel),
+            functools.partial(self.send_poll, message),
         )

@@ -16,3 +16,7 @@ async def get_message(message_id: int, channel: discord.TextChannel) -> discord.
 def remove_message(message_id: int) -> None:
     if message_id in message_cache:
         message_cache.pop(message_id)
+
+
+def clear_cache() -> None:
+    message_cache.clear()

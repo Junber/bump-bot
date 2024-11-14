@@ -91,3 +91,9 @@ async def initialize_empty_reactions(message_id: int) -> None:
     async with cache_lock:
         found_reactions_cache[message_id] = {}
         found_reactions_cache_without_client[message_id] = {}
+
+
+async def clear_cache() -> None:
+    async with cache_lock:
+        found_reactions_cache.clear()
+        found_reactions_cache_without_client.clear()

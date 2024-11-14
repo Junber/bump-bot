@@ -117,8 +117,20 @@ def get_bump_time_reactions() -> dict[str, str]:
     return get_bump_time_message_config().get("reactions", {})
 
 
-def get_calendar_event_summary() -> str:
-    return get_bump_time_message_config().get("calendar event summary", "")
+def get_bump_time_in_person_reaction() -> str:
+    return get_bump_time_message_config().get("in-person reaction", "")
+
+
+def get_bump_time_in_person_days() -> list[str]:
+    return get_bump_time_message_config().get("in-person days", [])
+
+
+def get_default_calendar_event_summary() -> str:
+    return get_bump_time_message_config().get("default calendar event summary", "")
+
+
+def get_in_person_calendar_event_summary() -> str:
+    return get_bump_time_message_config().get("in-person calendar event summary", "")
 
 
 # Logging
@@ -137,6 +149,11 @@ def get_log() -> BasicCommandConfig:
 # Shutdown
 def get_shutdown() -> BasicCommandConfig:
     return BasicCommandConfig(get_config().get("shutdown", {}))
+
+
+# Clear cache
+def get_clear_cache() -> BasicCommandConfig:
+    return BasicCommandConfig(get_config().get("clear cache", {}))
 
 
 # Bookstack

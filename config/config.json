@@ -32,7 +32,13 @@
 				"9️⃣": "19:00",
 				"🔟": "20:00"
 			},
-			"calendar event summary": "Pen and Paper"
+			"in-person reaction": "seaShanty",
+			"in-person days": [
+				"saturday",
+				"sunday"
+			],
+			"default calendar event summary": "Pen and Paper",
+			"in-person calendar event summary": "Pen and Paper (In-Person!)"
 		}
 	},
 	"logging": {
@@ -45,6 +51,11 @@
 		"channel": "bot",
 		"trigger": "shutdown",
 		"message content": "Urghhhhhhh!!!!!"
+	},
+	"clear cache": {
+		"channel": "bot",
+		"trigger": "clear cache",
+		"message content": "Even doubting my memory now..."
 	},
 	"bookstack": {
 		"channel": "project-isaaw",

@@ -1,4 +1,6 @@
 import asyncio
+from calendar import TextCalendar
+import datetime
 from typing import Tuple
 import discord
 
@@ -10,8 +12,31 @@ import discord_client
 import found_reactions_cache
 
 
+class SelectDayView(discord.ui.View):
+    def __init__(self, possible_days: list[str]) -> None:
+        super().__init__()
+        for day in possible_days:
+            self.add_button(day)
+
+    def add_button(self, day: str) -> None:
+        button = discord.ui.Button(label=day)
+
+        async def callback(interaction: discord.Interaction) -> None:
+            if not isinstance(interaction.channel, discord.TextChannel):
+                return
+            await interaction.response.send_message(BumpTimeCommand.get_start_poll_command(day))
+            message = await interaction.original_response()
+            if not message:
+                return
+            await BumpTimeCommand.start_time_poll(message, interaction.channel)
+
+        button.callback = callback
+        self.add_item(button)
+
+
 class BumpCommand(VotingCommand):
     announce_results_wait = CancelableWait(30.0)
+    last_time_poll_started: datetime.datetime | None = None
     last_result: list[str] | None = None
 
     @staticmethod
@@ -76,17 +101,16 @@ class BumpCommand(VotingCommand):
     async def handles_message(self, message: discord.Message, channel: discord.TextChannel) -> bool:
         if channel.name != config.get_voting_channel_name():
             return False
-        await self.announce_results_wait.cancel()
-        return message.content == config.get_voting_trigger()
+
+        if BumpTimeCommand.handles_message_static(message, channel):
+            await self.announce_results_wait.cancel()
+            self.last_time_poll_started = message.created_at
+        return message.content.lower() == config.get_voting_trigger()
 
     # @override
-    async def send_poll(
-        self, message: discord.Message, channel: discord.TextChannel
-    ) -> discord.Message:
+    async def send_poll(self, message: discord.Message) -> discord.Message:
         (embed, _) = self.get_embed_and_result({})
-        poll_message: discord.Message = await channel.send(
-            config.get_bump_message_content(), embed=embed
-        )
+        poll_message = await message.reply(config.get_bump_message_content(), embed=embed)
         await found_reactions_cache.initialize_empty_reactions(poll_message.id)
         for reaction in config.get_bump_reactions():
             emoji = discord_client.get_emoji(reaction)
@@ -107,23 +131,26 @@ class BumpCommand(VotingCommand):
             and message.author == discord_client.get_client().user
         )
 
-    async def announce_results(self, result: list[str], channel: discord.TextChannel) -> None:
-        if not await self.announce_results_wait.wait():
+    async def announce_results(self, result: list[str], message: discord.Message) -> None:
+        if not await self.announce_results_wait.wait() or not isinstance(
+            message.channel, discord.TextChannel
+        ):
             return
 
         if len(result) == 0:
-            await channel.send(
+            await message.reply(
                 "It seems like no date could be found, sorry. Better luck next time."
             )
         elif len(result) == 1:
-            await channel.send("Only one date works, so we'll use that.")
-            bump_time_message = await channel.send(config.get_voting_trigger() + " " + result[0])
-
-            # TODO: avoid creating new instance here
-            await BumpTimeCommand().on_message(bump_time_message, channel)
+            one_day_message = await message.reply("Only one date works, so we'll use that.")
+            await BumpTimeCommand.start_time_poll(
+                await one_day_message.reply(BumpTimeCommand.get_start_poll_command(result[0])),
+                message.channel,
+            )
         else:
-            await channel.send(
-                "Multiple days ({}) work. Sort that one out yourselves.".format(", ".join(result))
+            await message.reply(
+                "Multiple days ({}) work. Sort that one out yourselves.".format(", ".join(result)),
+                view=SelectDayView(result),
             )
 
     # @override
@@ -145,7 +172,9 @@ class BumpCommand(VotingCommand):
         if (
             result is not None
             and result != self.last_result
-            and isinstance(message.channel, discord.TextChannel)
+            and (
+                not self.last_time_poll_started or self.last_time_poll_started < message.created_at
+            )
         ):
-            asyncio.create_task(self.announce_results(result, message.channel))
+            asyncio.create_task(self.announce_results(result, message))
         self.last_result = result

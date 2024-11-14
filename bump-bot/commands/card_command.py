@@ -372,6 +372,8 @@ class BoosterSelect(discord.ui.Select):
                 interaction.user.display_name, prizes[pack], booster_packs[pack], card_text
             )
         )
+        if interaction.message:
+            await interaction.message.delete()
 
 
 def create_draw_view() -> discord.ui.View:
