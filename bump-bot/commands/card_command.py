@@ -377,7 +377,7 @@ class BoosterSelect(discord.ui.Select):
 
 
 def create_draw_view() -> discord.ui.View:
-    view = discord.ui.View()
+    view = discord.ui.View(timeout=None)
     view.add_item(BoosterSelect())
     return view
 

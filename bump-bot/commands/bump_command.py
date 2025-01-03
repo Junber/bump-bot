@@ -14,7 +14,7 @@ import found_reactions_cache
 
 class SelectDayView(discord.ui.View):
     def __init__(self, possible_days: list[str]) -> None:
-        super().__init__()
+        super().__init__(timeout=None)
         for day in possible_days:
             self.add_button(day)
 

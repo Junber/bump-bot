@@ -8,9 +8,9 @@ import bump_bot_config as config
 
 def get_event_summary(happening_in_person: bool):
     if happening_in_person:
-        return config.get_default_calendar_event_summary()
-    else:
         return config.get_in_person_calendar_event_summary()
+    else:
+        return config.get_default_calendar_event_summary()
 
 
 class Calendar:
