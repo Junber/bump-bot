@@ -4,6 +4,7 @@ import os
 import caldav
 
 import bump_bot_config as config
+from utils import get_logger
 
 
 def get_event_summary(happening_in_person: bool):
@@ -34,8 +35,9 @@ class Calendar:
             )
             self.calendar = self.client.principal().calendars()[0]
             self.valid = True
-        except:
-            pass
+        except Exception as e:
+            get_logger().error("Could not initialize calendar client.")
+            get_logger().error(e)
 
     def find_events(self, date: datetime.date) -> list[caldav.CalendarObjectResource]:
         if not self.valid:
@@ -91,4 +93,11 @@ class Calendar:
         return True
 
 
-calendar = Calendar()
+calendar: Calendar | None = None
+
+
+def get_calendar() -> Calendar:
+    global calendar
+    if not calendar:
+        calendar = Calendar()
+    return calendar

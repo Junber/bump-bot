@@ -4,7 +4,7 @@ import discord
 import pylev
 
 from utils import find_closest_index, get_all_message
-from bookstack_client import bookstack
+from bookstack_client import get_bookstack
 import bump_bot_config as config
 import discord_client
 from utils import get_logger
@@ -69,7 +69,7 @@ max_parse_distance = 3
 
 
 def prefix_levenshtein(prefix: str, string: str) -> int:
-    return pylev.levenshtein(prefix.lower(), string.lower()[: min(len(prefix), len(string))])
+    return pylev.levenshtein(prefix.lower(), string.lower()[: len(prefix)])
 
 
 def extract(line: str) -> tuple[int, str, str]:
@@ -81,9 +81,17 @@ def extract(line: str) -> tuple[int, str, str]:
             prefix = format.format(base_prefix)
             distance = prefix_levenshtein(prefix, line)
             if distance < best_distance:
+                cut_index = -1
+                for i in range(len(prefix) - distance, len(prefix) + distance):
+                    if i >= len(line):
+                        break
+                    if line[i] in ":*":
+                        cut_index = i
+                if cut_index < 0:
+                    continue
                 best_distance = distance
                 best_result_name = result_name
-                best_line = line[len(prefix) :].strip()
+                best_line = line[cut_index + 1 :].strip().strip("*:")
 
     return best_distance, best_result_name, best_line
 
@@ -92,7 +100,6 @@ def parse(message: str) -> dict:
     result = {}
     last_result_name = ""
     for line in message.split("\n"):
-        found = False
         distance, result_name, extracted = extract(line)
         if distance <= max_parse_distance:
             if result_name in result:
@@ -100,9 +107,7 @@ def parse(message: str) -> dict:
             else:
                 result[result_name] = extracted
             last_result_name = result_name
-            found = True
-            break
-        if not found:
+        else:
             result[last_result_name] += "  \n" + line.strip()
     return result
 
@@ -115,14 +120,18 @@ def find_chapter(type: str) -> tuple[str, str]:
 def export(message: str) -> bool:
     try:
         parsed = parse(message)
-        markdown = "#### Effect\n{}".format(parsed["effect"])
+        markdown = ""
+        if "" in parsed:
+            markdown = "#### Misc\n{}\n{}".format(parsed[""], markdown)
+        if "effect" in parsed:
+            markdown = "#### Effect\n{}\n{}".format(parsed["effect"], markdown)
         if "flavor" in parsed:
             markdown = "#### Flavor\n{}\n{}".format(parsed["flavor"], markdown)
         if "cost" in parsed:
             markdown = "{}\n#### Cost\n{}".format(markdown, parsed["cost"])
 
-        bookstack.create_page(parsed["name"], markdown, find_chapter(parsed["type"]))
-    except Exception:
+        get_bookstack().create_page(parsed["name"], markdown, find_chapter(parsed["type"]))
+    except:
         get_logger().exception("Parsing message failed:\n" + message)
         return False
     return True
@@ -131,8 +140,8 @@ def export(message: str) -> bool:
 def unexport(message: str) -> bool:
     try:
         parsed = parse(message)
-        bookstack.delete_page(parsed["name"], find_chapter(parsed["type"]))
-    except Exception:
+        get_bookstack().delete_page(parsed["name"], find_chapter(parsed["type"]))
+    except:
         get_logger().exception("Parsing message failed:\n" + message)
         return False
     return True

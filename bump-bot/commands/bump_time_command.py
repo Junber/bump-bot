@@ -3,7 +3,7 @@ from typing import Tuple
 import discord
 
 import bump_bot_config as config
-from calendar_client import calendar
+from calendar_client import get_calendar
 import discord_client
 import found_reactions_cache
 from utils import find_closest_index
@@ -161,7 +161,7 @@ class BumpTimeCommand(VotingCommand):
             if emoji is not None:
                 await poll_message.add_reaction(emoji)
 
-        calendar.create_event(date, None, False)
+        get_calendar().create_event(date, None, False)
 
         return poll_message
 
@@ -196,13 +196,13 @@ class BumpTimeCommand(VotingCommand):
             reactions[config.get_voting_cancel_reaction()]
         ):
             await message.edit(content="This poll was canceled", embed=None)
-            calendar.delete_events(date)
+            get_calendar().delete_events(date)
             return
 
         (embed, time, in_person_happening) = self.get_embed_and_time(reactions, in_person)
         await message.edit(embed=embed)
 
-        if time and calendar.create_event(date, time, in_person_happening):
+        if time and get_calendar().create_event(date, time, in_person_happening):
             content = "New time found: " + time.strftime("%H:%M")
             if in_person_happening:
                 content += "\nAnd it's happening in person!"

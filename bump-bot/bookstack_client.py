@@ -25,8 +25,9 @@ class Bookstack:
             self.rebuild_chapter_cache()
             self.rebuild_page_cache()
             self.valid = True
-        except:
-            pass
+        except Exception as e:
+            get_logger().error("Could not initialize bookstack client.")
+            get_logger().error(e)
 
     # Generic
     def get_url(self, endpoint: str) -> str:
@@ -181,4 +182,11 @@ class Bookstack:
             self.delete("pages/{}".format(page_id))
 
 
-bookstack = Bookstack()
+bookstack: Bookstack | None = None
+
+
+def get_bookstack() -> Bookstack:
+    global bookstack
+    if not bookstack:
+        bookstack = Bookstack()
+    return bookstack

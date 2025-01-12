@@ -178,7 +178,7 @@ def get_bookstack_export_all() -> BasicCommandConfig:
     return BasicCommandConfig(get_bookstack().get("export all", {}))
 
 
-# Bookstack::Export All
+# Bookstack::Unexport All
 def get_bookstack_unexport_all() -> BasicCommandConfig:
     return BasicCommandConfig(get_bookstack().get("unexport all", {}))
 
