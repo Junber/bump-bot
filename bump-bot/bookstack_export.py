@@ -62,6 +62,7 @@ chapters = {
     "Summon Spell": ("Blood Spells", ""),
     "? Spell": ("Blood Spells", ""),
     "Bone Spell": ("Bone Spells", ""),
+    "Pet": ("Pets", ""),
     "Pet (I've heard those exist now?)": ("Pets", ""),
     "Artefact / Weapon / Item / Hat / Pet / Mystery": ("Pets", ""),
 }

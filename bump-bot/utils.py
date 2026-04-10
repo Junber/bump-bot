@@ -11,8 +11,8 @@ def get_logger() -> logging.Logger:
     return logger
 
 
-def find_closest_index(options: Iterable[str], to_find: str) -> int:
-    closest_distance = 99999
+def find_closest_index(options: Iterable[str], to_find: str, max_distance: int = 99999) -> int:
+    closest_distance = max_distance
     closest_index = -1
     for index, option in enumerate(options):
         distance = pylev.levenshtein(option, to_find)

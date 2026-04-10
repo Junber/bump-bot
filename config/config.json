@@ -4,6 +4,7 @@
 		"channel": "scheduling-or-some-say-bump",
 		"required votes": 5,
 		"cancel reaction": "❌",
+		"date format": "%d.%m.",
 		"bump message": {
 			"message content": "bump",
 			"embed title": "bump",
@@ -23,6 +24,7 @@
 			"message content postfix": " it is then. Bump!",
 			"embed title": "bump time",
 			"embed field name": "bump time",
+			"max edit distance": 5,
 			"reactions": {
 				"4️⃣": "14:00",
 				"5️⃣": "15:00",

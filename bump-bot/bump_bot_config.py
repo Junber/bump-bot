@@ -66,6 +66,10 @@ def get_voting_cancel_reaction() -> str:
     return get_voting().get("cancel reaction", "")
 
 
+def get_date_format() -> str:
+    return get_voting().get("date format", "")
+
+
 # Cards
 def get_cards() -> BasicCommandConfig:
     return BasicCommandConfig(get_config().get("cards", {}))
@@ -111,6 +115,10 @@ def get_bump_time_embed_title() -> str:
 
 def get_bump_time_embed_field_name() -> str:
     return get_bump_time_message_config().get("embed field name", "")
+
+
+def get_max_edit_distance() -> int:
+    return get_bump_time_message_config().get("max edit distance", 0)
 
 
 def get_bump_time_reactions() -> dict[str, str]:

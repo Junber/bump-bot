@@ -12,6 +12,7 @@ import discord_client
 # TODO: Extract more common functionality to this class
 class VotingCommand(ReactionsCommand):
     update_message_wait = CancelableWait(1.0)
+    announce_result_wait = CancelableWait(30.0)
 
     @staticmethod
     async def replace_pins(

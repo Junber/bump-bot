@@ -17,6 +17,6 @@ class LogCommand(BasicCommand):
     # @override
     async def on_message(self, message: discord.Message, channel: discord.TextChannel) -> None:
         await channel.send(
-            self.get_message_content() + " (Commit:" + get_current_commit_hash() + ")",
+            self.get_message_content() + " (Commit: " + get_current_commit_hash() + ")",
             file=discord.File(config.get_log_file_name()),
         )
