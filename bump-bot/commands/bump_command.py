@@ -13,9 +13,9 @@ from bump_command_utils import *
 
 
 class SelectDayView(discord.ui.View):
-    def __init__(self, possible_days: list[str], week_offset: int) -> None:
+    def __init__(self, possible_days: list[str], week_start: datetime.date) -> None:
         super().__init__(timeout=None)
-        self.week_offset = week_offset
+        self.week_start = week_start
         for day in possible_days:
             self.add_button(day)
 
@@ -26,7 +26,7 @@ class SelectDayView(discord.ui.View):
             if not isinstance(interaction.channel, discord.TextChannel):
                 return
             await interaction.response.send_message(
-                BumpTimeCommand.get_start_poll_command(day, self.week_offset)
+                BumpTimeCommand.get_start_poll_command(day, self.week_start)
             )
             message = await interaction.original_response()
             if not message:
@@ -167,7 +167,7 @@ class BumpCommand(VotingCommand):
             await BumpTimeCommand.start_time_poll(
                 await one_day_message.reply(
                     BumpTimeCommand.get_start_poll_command(
-                        result[0], get_week_offset(original_message)
+                        result[0], get_week_start(original_message)
                     )
                 ),
                 message.channel,
@@ -175,7 +175,7 @@ class BumpCommand(VotingCommand):
         else:
             await message.reply(
                 "Multiple days ({}) work. Sort that one out yourselves.".format(", ".join(result)),
-                view=SelectDayView(result, get_week_offset(original_message)),
+                view=SelectDayView(result, get_week_start(original_message)),
             )
 
     # @override
@@ -199,12 +199,10 @@ class BumpCommand(VotingCommand):
         )
         await message.edit(embed=embed)
 
-        if (
-            result is not None
-            and result != self.last_result
-            and (
-                not self.last_time_poll_started or self.last_time_poll_started < message.created_at
-            )
+        if result is None:
+            await self.announce_result_wait.cancel()
+        elif result != self.last_result and (
+            not self.last_time_poll_started or self.last_time_poll_started < message.created_at
         ):
             self.last_result = result
             asyncio.create_task(self.announce_results(result, message, original_message))

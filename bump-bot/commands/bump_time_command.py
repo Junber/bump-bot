@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+from math import ceil
 from typing import Tuple
 import discord
 
@@ -159,7 +160,8 @@ class BumpTimeCommand(VotingCommand):
         return (embed, earliest_datetime, in_person_happening)
 
     @staticmethod
-    def get_start_poll_command(day: str, week_offset: int) -> str:
+    def get_start_poll_command(day: str, week_start: datetime.date) -> str:
+        week_offset = ceil((week_start - datetime.date.today()).days / 7)
         result = config.get_voting_trigger() + " " + day
         if get_default_offset(find_weekday_index(day), datetime.date.today()) != week_offset:
             result += " " + str(week_offset)
@@ -239,7 +241,7 @@ class BumpTimeCommand(VotingCommand):
             content = "New time found: " + time.strftime("%H:%M")
             if in_person_happening:
                 content += "\nAnd it's happening in person!"
-            await message.channel.send(content)
+            await message.reply(content)
 
     # @override
     async def on_reaction_changed(self, message: discord.Message, reaction_added: bool) -> None:
