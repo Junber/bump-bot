@@ -13,7 +13,6 @@ from commands.voting_command import VotingCommand
 import message_cache
 from bump_command_utils import bump_command_handles_message
 
-
 WEEKDAYS = [
     "monday",
     "tuesday",
@@ -32,12 +31,16 @@ def find_date(weekday_index: int, message_date: datetime.date, week_offset: int)
 
 
 def find_weekday_index(argument: str) -> int:
-    return find_closest_index(WEEKDAYS, argument.lower(), config.get_max_edit_distance())
+    return (
+        find_closest_index(WEEKDAYS, argument.lower(), config.get_max_edit_distance())
+        if len(argument) > 0
+        else -1
+    )
 
 
 def get_argument(message: discord.Message) -> str:
     parts = message.content.strip().split()
-    return parts[1]
+    return parts[1] if len(parts) >= 2 else ""
 
 
 def get_default_offset(weekday_index: int, message_date: datetime.date) -> int:
@@ -195,8 +198,8 @@ class BumpTimeCommand(VotingCommand):
             + get_argument(message)
             + config.get_bump_time_message_content_postfix()
         )
-        (date, in_person) = find_date_and_in_person(message)
-        (embed, _, _) = self.get_embed_and_time({}, date, in_person)
+        date, in_person = find_date_and_in_person(message)
+        embed, _, _ = self.get_embed_and_time({}, date, in_person)
         poll_message: discord.Message = await message.reply(content, embed=embed)
         await found_reactions_cache.initialize_empty_reactions(poll_message.id)
         for reaction in config.get_bump_time_reactions():
@@ -249,7 +252,7 @@ class BumpTimeCommand(VotingCommand):
             return
 
         reactions = await found_reactions_cache.get_found_reactions(message)
-        (date, in_person) = find_date_and_in_person(await message_cache.get_replied(message))
+        date, in_person = find_date_and_in_person(await message_cache.get_replied(message))
 
         if config.get_voting_cancel_reaction() in reactions and len(
             reactions[config.get_voting_cancel_reaction()]
@@ -258,7 +261,7 @@ class BumpTimeCommand(VotingCommand):
             get_calendar().delete_events(date)
             return
 
-        (embed, time, in_person_happening) = self.get_embed_and_time(reactions, date, in_person)
+        embed, time, in_person_happening = self.get_embed_and_time(reactions, date, in_person)
         await message.edit(embed=embed)
         if time and self.last_result != (time, in_person_happening):
             self.last_result = (time, in_person_happening)

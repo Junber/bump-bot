@@ -45,7 +45,7 @@ def get_week_start(message: discord.Message) -> datetime.date:
 
 class BumpCommand(VotingCommand):
     last_time_poll_started: datetime.datetime | None = None
-    last_result: list[str] | None = None
+    last_result: dict[discord.Message, list[str]] = {}
 
     @staticmethod
     def get_embed_and_result(
@@ -127,7 +127,7 @@ class BumpCommand(VotingCommand):
 
     # @override
     async def send_poll(self, message: discord.Message) -> discord.Message:
-        (embed, _) = self.get_embed_and_result({}, get_week_start(message))
+        embed, _ = self.get_embed_and_result({}, get_week_start(message))
         poll_message = await message.reply(config.get_bump_message_content(), embed=embed)
         await found_reactions_cache.initialize_empty_reactions(poll_message.id)
         for reaction in config.get_bump_reactions():
@@ -193,7 +193,7 @@ class BumpCommand(VotingCommand):
 
         original_message = await message_cache.get_replied(message)
 
-        (embed, result) = self.get_embed_and_result(
+        embed, result = self.get_embed_and_result(
             reactions,
             get_week_start(original_message),
         )
@@ -201,8 +201,8 @@ class BumpCommand(VotingCommand):
 
         if result is None:
             await self.announce_result_wait.cancel()
-        elif result != self.last_result and (
+        elif result != self.last_result.get(message, None) and (
             not self.last_time_poll_started or self.last_time_poll_started < message.created_at
         ):
-            self.last_result = result
+            self.last_result[message] = result
             asyncio.create_task(self.announce_results(result, message, original_message))
