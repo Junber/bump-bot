@@ -46,6 +46,7 @@ def get_week_start(message: discord.Message) -> datetime.date:
 class BumpCommand(VotingCommand):
     last_time_poll_started: datetime.datetime | None = None
     last_result: dict[discord.Message, list[str]] = {}
+    last_date_poll_week_start: datetime.date | None = None
 
     @staticmethod
     def get_embed_and_result(
@@ -93,11 +94,7 @@ class BumpCommand(VotingCommand):
             else:
                 message_text += ":x:"
 
-            message_text += " **{}** ({}) ({}): ".format(
-                day_name,
-                date.strftime(config.get_date_format()),
-                discord_client.get_emoji(reaction),
-            )
+            message_text += f" **{day_name}** ({date.strftime(config.get_date_format())}) ({discord_client.get_emoji(reaction)}): "
 
             message_text += VotingCommand.member_list(members, members_who_voted, "No one")
             message_text += "\n"
@@ -109,11 +106,7 @@ class BumpCommand(VotingCommand):
 
         return (
             discord.Embed(
-                title="{} ({} - {})".format(
-                    config.get_bump_embed_title(),
-                    week_start.strftime(config.get_date_format()),
-                    (date - one_day).strftime(config.get_date_format()),
-                )
+                title=f"{config.get_bump_embed_title()} ({week_start.strftime(config.get_date_format())} - {(date - one_day).strftime(config.get_date_format())})"
             ).add_field(name=config.get_bump_embed_field_name(), value=message_text),
             result,
         )
@@ -125,9 +118,49 @@ class BumpCommand(VotingCommand):
             self.last_time_poll_started = message.created_at
         return bump_command_handles_message(message, channel)
 
+    async def send_clarifying_poll_message(self, message: discord.Message) -> discord.Message:
+        week_offset = -1
+        explanation = ""
+        if self.last_date_poll_week_start == None:
+            explanation = "No date for last poll recorded."
+        else:
+            week_since_last_poll = (
+                message.created_at.date() - self.last_date_poll_week_start
+            ).days // 7
+            if week_since_last_poll >= 2:
+                explanation = "The last recorded poll was for a week before last."
+            elif week_since_last_poll == 1:
+                explanation = (
+                    "The last recorded poll was for last week. So, we'll use the current week."
+                )
+                week_offset = 0
+            elif week_since_last_poll == 0:
+                explanation = "The last recorded poll was already for the current week. So, we'll use the next week."
+                week_offset = 1
+            else:
+                explanation = "The last recorded poll was already for a future week. So, we'll use the week after that one."
+                week_offset = 1 - week_since_last_poll
+
+        if week_offset < 0:
+            WEEKDAY_CUTOFF = 2
+            explanation += " Using weekday logic: "
+            if message.created_at.date().weekday() <= WEEKDAY_CUTOFF:
+                explanation += f"Since it's not yet {WEEKDAYS[WEEKDAY_CUTOFF + 1].capitalize()}, we'll use the current week."
+                week_offset = 0
+            else:
+                explanation += f"Since it's already past {WEEKDAYS[WEEKDAY_CUTOFF].capitalize()}, we'll use the next week."
+                week_offset = 1
+
+        await message.channel.send(explanation)
+        return await message.channel.send(config.get_voting_trigger() + " " + str(week_offset))
+
     # @override
     async def send_poll(self, message: discord.Message) -> discord.Message:
-        embed, _ = self.get_embed_and_result({}, get_week_start(message))
+        if message.content.lower() == config.get_voting_trigger():
+            return await self.send_poll(await self.send_clarifying_poll_message(message))
+
+        self.last_date_poll_week_start = get_week_start(message)
+        embed, _ = self.get_embed_and_result({}, self.last_date_poll_week_start)
         poll_message = await message.reply(config.get_bump_message_content(), embed=embed)
         await found_reactions_cache.initialize_empty_reactions(poll_message.id)
         for reaction in config.get_bump_reactions():
@@ -163,9 +196,9 @@ class BumpCommand(VotingCommand):
                 "It seems like no date could be found, sorry. Better luck next time."
             )
         elif len(result) == 1:
-            one_day_message = await message.reply("Only one date works, so we'll use that.")
+            await message.reply("Only one date works, so we'll use that.")
             await BumpTimeCommand.start_time_poll(
-                await one_day_message.reply(
+                await message.channel.send(
                     BumpTimeCommand.get_start_poll_command(
                         result[0], get_week_start(original_message)
                     )
@@ -174,7 +207,7 @@ class BumpCommand(VotingCommand):
             )
         else:
             await message.reply(
-                "Multiple days ({}) work. Sort that one out yourselves.".format(", ".join(result)),
+                f"Multiple days ({", ".join(result)}) work. Sort that one out yourselves.",
                 view=SelectDayView(result, get_week_start(original_message)),
             )
 

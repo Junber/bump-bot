@@ -2,6 +2,16 @@ import discord
 
 import bump_bot_config as config
 
+WEEKDAYS = [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+]
+
 
 def get_week_offset(message: discord.Message) -> int:
     if message.content.lower() == config.get_voting_trigger():

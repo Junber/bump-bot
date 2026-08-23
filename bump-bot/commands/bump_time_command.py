@@ -11,17 +11,7 @@ import found_reactions_cache
 from utils import find_closest_index
 from commands.voting_command import VotingCommand
 import message_cache
-from bump_command_utils import bump_command_handles_message
-
-WEEKDAYS = [
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
-    "sunday",
-]
+from bump_command_utils import bump_command_handles_message, WEEKDAYS
 
 
 def find_date(weekday_index: int, message_date: datetime.date, week_offset: int) -> datetime.date:
@@ -121,14 +111,9 @@ class BumpTimeCommand(VotingCommand):
                 found_members |= members
                 if len(found_members) == len(members_who_voted):
                     earliest_possible_time = config.get_bump_time_reactions()[reaction]
-                    message_text += "**Earliest possible time: {}**\n\n".format(
-                        earliest_possible_time
-                    )
+                    message_text += f"**Earliest possible time: {earliest_possible_time}**\n\n"
 
-            message_text_options_chunk += " {} ({}): ".format(
-                config.get_bump_time_reactions()[reaction],
-                discord_client.get_emoji(reaction),
-            )
+            message_text_options_chunk += f" {config.get_bump_time_reactions()[reaction]} ({discord_client.get_emoji(reaction)}): "
 
             message_text_options_chunk += VotingCommand.member_list(members, members_who_voted, "-")
             message_text_options_chunk += "\n"
@@ -139,9 +124,7 @@ class BumpTimeCommand(VotingCommand):
         if in_person:
             reaction = config.get_bump_time_in_person_reaction()
             members = found_reactions.get(reaction, set())
-            message_text += "\nIn-person ({} to opt-out): ".format(
-                discord_client.get_emoji(reaction)
-            )
+            message_text += f"\nIn-person ({discord_client.get_emoji(reaction)} to opt-out): "
             if len(members):
                 message_text += ":x: " + VotingCommand.raw_member_list(members)
             elif len(members_who_voted) < config.get_required_votes():
@@ -151,9 +134,7 @@ class BumpTimeCommand(VotingCommand):
                 in_person_happening = True
 
         embed = discord.Embed(
-            title="{} ({})".format(
-                config.get_bump_time_embed_title(), date.strftime(config.get_date_format())
-            )
+            title=f"{config.get_bump_time_embed_title()} ({date.strftime(config.get_date_format())})"
         ).add_field(name=config.get_bump_time_embed_field_name(), value=message_text)
 
         earliest_datetime = None
